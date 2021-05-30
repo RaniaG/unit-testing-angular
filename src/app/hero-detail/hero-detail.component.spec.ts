@@ -1,4 +1,11 @@
-import { ComponentFixture, TestBed } from "@angular/core/testing";
+import {
+  async,
+  ComponentFixture,
+  fakeAsync,
+  flush,
+  TestBed,
+  tick,
+} from "@angular/core/testing";
 import { FormsModule } from "@angular/forms";
 import { By } from "@angular/platform-browser";
 import { ActivatedRoute } from "@angular/router";
@@ -42,5 +49,33 @@ describe("Hero Detail", () => {
     let text = fixture.debugElement.query(By.css("h2")).nativeElement
       .textContent;
     expect(text).toBe(`${hero.name.toUpperCase()} Details`);
+  });
+
+  describe("save", () => {
+    it("should call updateHero", fakeAsync(() => {
+      //Arrange
+      mockHeroService.updateHero.and.returnValue(of({}));
+      //Act
+      fixture.detectChanges();
+      fixture.componentInstance.save();
+      tick(350);
+      // flush(); // when we dont know the exact time to wait
+      //Assert
+      expect(mockHeroService.updateHero).toHaveBeenCalledTimes(1);
+    }));
+  });
+
+  describe("goBack", () => {
+    it("should call location back", async(() => {
+      //Arrange
+      //Act
+      fixture.detectChanges();
+      fixture.componentInstance.goBack();
+      //Assert
+      fixture.whenStable().then(() => {
+        //waits for all promises to resolve
+        expect(mockLocation.back).toHaveBeenCalledTimes(1);
+      });
+    }));
   });
 });
